@@ -8,6 +8,11 @@ the GitHub this software can improve the speed of information transmission
 improve the efficiency of study and work
 """
 
+__creator_list__ = (u"AceeStudio-TD_Ace", u"Acee-Studio@qq.com", u'China', u'www.Acee-Stuido.com')
+
+__follower_list__ = (u"Null", u"", u'', u'')
+
+
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys
@@ -20,7 +25,7 @@ import StringIO
 SELF_PATH = os.path.dirname(sys.argv[0])
 timeout = 50
 
-
+import style
 import paramiko
 import os
 #transport = paramiko.Transport(('211.149.223.67', 18759))
@@ -33,7 +38,6 @@ import os
 #remotepath='d:\\test\\1.jpg'
 #localpath='file2.jpg'
 #sftp.put(remotepath, localpath)
-
 
 
 class App(QApplication):
@@ -283,17 +287,17 @@ class ListImageWidget(QListView):
     def set_item(self, item):
         self.cokMusicListModel.appendRow(item)
 
-import style
-
 
 class AboutTableWidget(QLabel):
 
     def __init__(self, text='', color=None, range_blur=(0, 10), size=30,  image=None, parent=None):
         super(AboutTableWidget, self).__init__(parent)
+        self.setMouseTracking(True)
+
         self.range_blur = range_blur
         self.font_size = size
         if image:
-            self.setPixmap(QPixmap('Icons/github.png'))
+            self.setPixmap(image)
 
         if text:
             self.setText(text)
@@ -316,29 +320,42 @@ class AboutTableWidget(QLabel):
     def leaveEvent(self, event):
         self.effect.setBlurRadius(self.range_blur[1])
 
-creator_list = [u"AceeStudio-TD_Ace", u"Acee-Studio@qq.com"]
+    def mouseMoveEvent(self, event):
+        super(AboutTableWidget, self).mouseMoveEvent(event)
 
 
-class textwidget(QWidget):
+class TextWidget(QWidget):
 
     def __init__(self, parent=None):
-        super(textwidget, self).__init__(parent)
-        self.title_label = AboutTableWidget(text=u"CG Web", color=Qt.white, parent=self)
-        self.version_label = AboutTableWidget(text=u"version:{ver}".format(ver=__version__),size=15, color=Qt.white, parent=self)
+        super(TextWidget, self).__init__(parent)
+        self.setMouseTracking(True)
+
+        self.title_label = AboutTableWidget(text=u"CG Web", color=Qt.white, parent=self, image=QPixmap('Icons/github.png'))
+        self.version_label = AboutTableWidget(text=u"version:{ver}".format(ver=__version__), size=15, color=Qt.white, parent=self)
 
         self.creator_title = AboutTableWidget(text=u"Creator : ", color=Qt.white, parent=self)
 
-        self.user_acee = AboutTableWidget(text=u'\n'.join(creator_list), color=Qt.white, size=13, parent=self)
+        self.user_acee = AboutTableWidget(text=u'\n'.join(__creator_list__), color=Qt.white, size=13, parent=self)
+        self.user_acee_img = AboutTableWidget(parent=self, image=QPixmap('Icons/ace.jpg').scaled(150, 150), range_blur=(2, 15))
+
 
         self.follower = AboutTableWidget(text=u"Follower :", color=Qt.white, parent=self)
-        self.follower_user = AboutTableWidget(text='\n'.join(['Null']), color=Qt.white, size=13, parent=self)
+        self.follower_user = AboutTableWidget(text='\n'.join(__follower_list__), color=Qt.white, size=13, parent=self)
 
-        self.github = AboutTableWidget(text=u"GitHub : www.github.", color=Qt.white, parent=self)
+        self.github = AboutTableWidget(text=u"GitHub : https://github.com/zhangliganggm/cgweb", size=13, color=Qt.white, parent=self)
 
         self.info = AboutTableWidget(text=u"What is this : ", color=Qt.white, parent=self)
         self.wat = AboutTableWidget(text=__whatisthis__, color=Qt.white, size=13, parent=self)
 
+        self.mini_logo = AboutTableWidget(parent=self, image=QPixmap('Icons/github.png').scaled(150,150), range_blur=(1, 15))
+
+
         self.main_layout = QHBoxLayout()
+        self.main_layout.setSpacing(5)
+        self.main_layout.setMargin(5)
+        self.main_layout.addWidget(self.mini_logo)
+
+
         self.setLayout(self.main_layout)
 
         software_layout = QVBoxLayout()
@@ -349,6 +366,8 @@ class textwidget(QWidget):
         user_layout = QVBoxLayout()
         user_layout.addWidget(self.creator_title)
         user_layout.addWidget(self.user_acee)
+        user_layout.addWidget(self.user_acee_img)
+
         user_layout.addWidget(self.follower)
         user_layout.addWidget(self.follower_user)
         user_layout.addStretch(1)
@@ -357,48 +376,38 @@ class textwidget(QWidget):
         self.main_layout.addLayout(software_layout)
         self.main_layout.addLayout(user_layout)
 
+
         info_layout = QVBoxLayout()
         info_layout.addWidget(self.info)
         info_layout.addWidget(self.wat)
 
         info_layout.addWidget(self.github)
-
         info_layout.addStretch(1)
 
 
         user_layout.addLayout(info_layout)
+        user_layout.addStretch(1)
+
+    def mouseMoveEvent(self, event):
+        super(TextWidget, self).mouseMoveEvent(event)
 
 
 class AboutWidget(QWidget):
 
     def __init__(self, parent=None):
         super(AboutWidget, self).__init__(parent)
-        #self.setMouseTracking(True)
-        self.back_ground = AboutTableWidget(image='Icons/github.png',range_blur=(35, 50), parent=self)
+        self.setMouseTracking(True)
+        self.back_ground = AboutTableWidget(image=QPixmap('Icons/github.png'),range_blur=(15, 50), parent=self)
+        self.text_widget = TextWidget(self)
 
-        self.widget_count = 0
-        self.text_widget = textwidget(self)
-
-
-        #self.sort_widget(self.title_label)
-        #self.sort_widget(self.version_label)
-        #self.sort_widget(self.back_ground)
-        #self.sort_widget(self.acee_label)
-        #self.sort_widget(self.follower)
-        #self.sort_widget(self.github)
-
-        #self.setStyleSheet(style.about_css)
     def resizeEvent(self, event):
         self.text_widget.resize(self.width(), self.height())
 
-
-    def sort_widget(self, widget, space=5):
-
-        widget.move(0, widget.font_size*self.widget_count+space)
-        self.widget_count += 1
-
     def mouseMoveEvent(self, event):
-        print event
+        offset = self.width()/2 - event.pos().x()
+
+        self.back_ground.move(offset/3, self.back_ground.pos().y())
+        self.text_widget.move(offset/1, self.back_ground.pos().y())
 
         super(AboutWidget, self).mouseMoveEvent(event)
 
@@ -408,9 +417,9 @@ class AboutWidget(QWidget):
     def paintEvent(self, p):
         qp = QPainter()
         qp.begin(self)
-        qp.setBrush(QBrush(QColor(128, 128, 128)))
-        qp.drawRect(0, 0, self.width() ,self.height())
-        #qp.drawPixmap(self.width()/2-(self.image.size().width()/2), self.height()/2-(self.image.size().height()/2), self.image)
+        qp.setBrush(QBrush(QColor(160, 160, 160)))
+        qp.drawRect(0, 0, self.width(), self.height())
+
         qp.end()
 
 app = App(sys.argv)
